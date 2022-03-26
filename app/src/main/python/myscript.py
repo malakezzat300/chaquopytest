@@ -1,6 +1,10 @@
+import base64
+import io
+
 import cv2
 import math
 import numpy as np
+from PIL import Image
 
 global img
 global EncryptionImg
@@ -70,24 +74,31 @@ def Decryption(EncryptionImg, j0, g0, x0, DecryptionImg):
                 re = int(ans, 2)
                 DecryptionImg[s][n][z] = re
 
-def Encrypt(EncryptImage):
-    image = repr(EncryptImage)
-    raw_s = r'{}'.format(EncryptImage)
-    img = cv2.imread(raw_s, 1)  # Read original image
-    EncryptionImg = np.zeros(img.shape, np.uint8)
-    Encryption(img, 10, 30, 0.123345, EncryptionImg)  # encryption
-    
 
+def Encrypt(data):
+    #encryption image function its input is the path of image to encrypt
+    # the output should be encrypted
+    decoded_data = base64.b64decode(data)
+    np_data = np.fromstring(decoded_data,np.uint8)
+    img = cv2.imdecode(np_data,cv2.IMREAD_UNCHANGED)
+
+    #img = cv2.imread(r"F:\3lom\image project\test_image.png", 1) # Read original image
+    EncryptionImg = np.zeros(img.shape, np.uint8)  # make blank image with the same size to store encrypted image
+    Encryption(img, 10, 30, 0.123345, EncryptionImg)  # encryption
+    pil_im = Image.fromarray(EncryptionImg)
+    buff = io.BytesIO()
+    pil_im.save(buff,format="PNG")
+    img_str = base64.b64encode(buff.getvalue())
+    return ""+str(img_str,'utf-8')
 
 def SaveEncrypt():
+    #this method is used to save encrypted image
     cv2.imwrite(r"F:\3lom\image project\Correlation_matrix-EncryptionImg.png", EncryptionImg)
 
 
-
-
 if __name__ == "__main__":
+
     img   = cv2.imread(r"F:\3lom\image project\test_image.png", 1)                    # Read original image
-    
     EncryptionImg = np.zeros(img.shape, np.uint8)
     Encryption(img,10,30,0.123345,EncryptionImg)                                       # encryption
     cv2.imwrite(r"F:\3lom\image project\Correlation_matrix-EncryptionImg.png",EncryptionImg)  # Save the encrypted image

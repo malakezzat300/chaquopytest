@@ -10,7 +10,7 @@ android {
     defaultConfig {
         applicationId "com.malakezzat.android.chaquopytest2"
         minSdkVersion 23
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
 
@@ -32,6 +32,8 @@ android {
                 install "numpy"
                 install "python-math"
                 install "opencv-python"
+                install "Pillow"
+                install "opencv-contrib-python-headless"
             }
         }
 
