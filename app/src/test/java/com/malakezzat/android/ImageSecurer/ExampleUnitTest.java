@@ -1,4 +1,4 @@
-package com.malakezzat.android.chaquopytest2;
+package com.malakezzat.android.ImageSecurer;
 
 import org.junit.Test;
 
