@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "859403662865",
+    "project_id": "imager-7ad44",
+    "storage_bucket": "imager-7ad44.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:859403662865:android:6814fd053819f54b2b23b0",
+        "android_client_info": {
+          "package_name": "com.malakezzat.android.ImageSecurer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "859403662865-o1uujma61s7ptdq3lffbq982nelm27qc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCFGMLgdIz1l6wxtM40wfDtxsz4F4EdMo4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "859403662865-o1uujma61s7ptdq3lffbq982nelm27qc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
