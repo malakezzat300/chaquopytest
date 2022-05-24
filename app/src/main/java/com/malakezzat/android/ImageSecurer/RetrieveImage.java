@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import android.os.Environment;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +33,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Objects;
 
@@ -76,7 +78,11 @@ public class RetrieveImage extends Fragment {
                         == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.READ_EXTERNAL_STORAGE)
                         == PackageManager.PERMISSION_GRANTED) {
                     if(!img.getTag().equals("ph")){
-                        saveToGallery(img);
+                        try {
+                            saveToGallery(img);
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
                     }else{
                         Toast.makeText(getActivity(),"There is no image to save!",Toast.LENGTH_LONG).show();
                     }
@@ -122,20 +128,23 @@ public class RetrieveImage extends Fragment {
         }
     }
 
-    private void saveToGallery(ImageView imageView){
+    private void saveToGallery(ImageView imageView) throws FileNotFoundException {
         BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
         Bitmap bitmap = bitmapDrawable.getBitmap();
 
         FileOutputStream outputStream = null;
-        File file = Environment.getExternalStorageDirectory();
-        File dir = new File(file.getAbsolutePath() + "/DCIM/MyPics/");
-        dir.mkdirs();
+        File file2 = Environment.getExternalStorageDirectory();
+        File dir = new File(file2.getAbsolutePath() + "/Pictures/");
 
-        String filename = String.format("%d.png",System.currentTimeMillis());
-        File outFile = new File(dir,filename);
+//        File imagePath = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+        File file = new File(dir,"IS_"+ System.currentTimeMillis() +".png");
+
+        //dir.mkdirs();
+//        String filename = String.format("%d.png",System.currentTimeMillis());
+//        File outFile = new File(dir,filename);
 
         try{
-            outputStream = new FileOutputStream(outFile);
+            outputStream = new FileOutputStream(file);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -143,21 +152,18 @@ public class RetrieveImage extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
         try{
             outputStream.flush();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        try{
             outputStream.close();
         }
         catch (Exception e){
             e.printStackTrace();
         }
-
         MediaScannerConnection.scanFile(getActivity(),
-                new String[] { outFile.getAbsolutePath()  }, null,
+                new String[] { file.getAbsolutePath()   }, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
+
                     }});
+
         Toast.makeText(getActivity(),"Image Saved!",Toast.LENGTH_SHORT).show();
     }
 

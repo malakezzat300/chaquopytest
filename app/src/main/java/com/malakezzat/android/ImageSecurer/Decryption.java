@@ -32,6 +32,7 @@ import com.chaquo.python.android.AndroidPlatform;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Objects;
 
@@ -134,7 +135,11 @@ public class Decryption extends Fragment {
                             == PackageManager.PERMISSION_GRANTED && ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.READ_EXTERNAL_STORAGE)
                             == PackageManager.PERMISSION_GRANTED) {
                         if(!imageViewDecrypted.getTag().equals("ph")){
-                            saveToGallery(imageViewDecrypted);
+                            try {
+                                saveToGallery(imageViewDecrypted);
+                            } catch (FileNotFoundException e) {
+                                e.printStackTrace();
+                            }
                         }else{
                             Toast.makeText(getActivity(),"There is no image to save!",Toast.LENGTH_LONG).show();
                         }
@@ -178,20 +183,23 @@ public class Decryption extends Fragment {
         }
     }
 
-    private void saveToGallery(ImageView imageView){
+    private void saveToGallery(ImageView imageView) throws FileNotFoundException {
         BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
         Bitmap bitmap = bitmapDrawable.getBitmap();
 
         FileOutputStream outputStream = null;
-        File file = Environment.getExternalStorageDirectory();
-        File dir = new File(file.getAbsolutePath() + "/DCIM/MyPics/");
-        dir.mkdirs();
+        File file2 = Environment.getExternalStorageDirectory();
+        File dir = new File(file2.getAbsolutePath() + "/Pictures/");
 
-        String filename = String.format("%d.png",System.currentTimeMillis());
-        File outFile = new File(dir,filename);
+//        File imagePath = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+        File file = new File(dir,"IS_"+ System.currentTimeMillis() +".png");
+
+        //dir.mkdirs();
+//        String filename = String.format("%d.png",System.currentTimeMillis());
+//        File outFile = new File(dir,filename);
 
         try{
-            outputStream = new FileOutputStream(outFile);
+            outputStream = new FileOutputStream(file);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -199,20 +207,30 @@ public class Decryption extends Fragment {
         bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
         try{
             outputStream.flush();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        try{
             outputStream.close();
         }
         catch (Exception e){
             e.printStackTrace();
         }
         MediaScannerConnection.scanFile(getActivity(),
-                new String[] { outFile.getAbsolutePath()  }, null,
+                new String[] { file.getAbsolutePath()   }, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
+
                     }});
+
+//        ContentValues values = new ContentValues();
+//        values.put(MediaStore.Images.Media.TITLE, file.getName());
+//        values.put(MediaStore.Images.Media.DESCRIPTION, "Encrypted Image form Image Securer App");
+//        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis ());
+//        values.put(MediaStore.Images.ImageColumns.BUCKET_ID, file.toString().toLowerCase(Locale.US).hashCode());
+//        values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, file.getName().toLowerCase(Locale.US));
+//        values.put("_data", file.getAbsolutePath());
+//
+//        cr = Objects.requireNonNull(getActivity()).getContentResolver();
+//        cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//        MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), file.getAbsolutePath() , file.getName() ,"Encrypted Image form Image Securer App");
+
         Toast.makeText(getActivity(),"Image Saved!",Toast.LENGTH_SHORT).show();
     }
 

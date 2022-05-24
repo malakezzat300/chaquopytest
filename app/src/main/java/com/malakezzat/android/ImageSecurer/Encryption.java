@@ -3,6 +3,9 @@ package com.malakezzat.android.ImageSecurer;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -41,8 +44,10 @@ import com.chaquo.python.android.AndroidPlatform;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
 
 import pl.droidsonroids.gif.GifImageView;
@@ -62,8 +67,7 @@ public class Encryption extends Fragment implements Runnable{
     Thread imageThread,imageThread2;
     int j = 1;
     ArrayList<Thread> threads;
-    MediaScannerConnection msc;
-
+    ContentResolver cr;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -186,7 +190,11 @@ public class Encryption extends Fragment implements Runnable{
                         if (ContextCompat.checkSelfPermission(Objects.requireNonNull(getActivity()), Manifest.permission.WRITE_EXTERNAL_STORAGE)
                                 == PackageManager.PERMISSION_GRANTED) {
                             if(!imageViewEncrypted.getTag().equals("ph")){
-                                saveToGallery(imageViewEncrypted);
+                                try {
+                                    saveToGallery(imageViewEncrypted);
+                                } catch (FileNotFoundException e) {
+                                    e.printStackTrace();
+                                }
                             }else{
                                 Toast.makeText(getActivity(),"There is no image to save!",Toast.LENGTH_LONG).show();
                             }
@@ -227,20 +235,23 @@ public class Encryption extends Fragment implements Runnable{
         }
     }
 
-    private void saveToGallery(ImageView imageView){
+    private void saveToGallery(ImageView imageView) throws FileNotFoundException {
         BitmapDrawable bitmapDrawable = (BitmapDrawable) imageView.getDrawable();
         Bitmap bitmap = bitmapDrawable.getBitmap();
 
         FileOutputStream outputStream = null;
-        File file = Environment.getExternalStorageDirectory();
-        File dir = new File(file.getAbsolutePath() + "/DCIM/MyPics/");
-        dir.mkdirs();
+       File file2 = Environment.getExternalStorageDirectory();
+        File dir = new File(file2.getAbsolutePath() + "/Pictures/");
 
-        String filename = String.format("%d.png",System.currentTimeMillis());
-        File outFile = new File(dir,filename);
+//        File imagePath = (Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES));
+        File file = new File(dir,"IS_"+ System.currentTimeMillis() +".png");
+
+        //dir.mkdirs();
+//        String filename = String.format("%d.png",System.currentTimeMillis());
+//        File outFile = new File(dir,filename);
 
         try{
-            outputStream = new FileOutputStream(outFile);
+            outputStream = new FileOutputStream(file);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -248,21 +259,30 @@ public class Encryption extends Fragment implements Runnable{
         bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
         try{
             outputStream.flush();
-        }catch (Exception e){
-            e.printStackTrace();
-        }
-        try{
             outputStream.close();
         }
         catch (Exception e){
             e.printStackTrace();
         }
         MediaScannerConnection.scanFile(getActivity(),
-                new String[] { outFile.getAbsolutePath()  }, null,
+                new String[] { file.getAbsolutePath()   }, null,
                 new MediaScannerConnection.OnScanCompletedListener() {
                     public void onScanCompleted(String path, Uri uri) {
 
                     }});
+
+//        ContentValues values = new ContentValues();
+//        values.put(MediaStore.Images.Media.TITLE, file.getName());
+//        values.put(MediaStore.Images.Media.DESCRIPTION, "Encrypted Image form Image Securer App");
+//        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis ());
+//        values.put(MediaStore.Images.ImageColumns.BUCKET_ID, file.toString().toLowerCase(Locale.US).hashCode());
+//        values.put(MediaStore.Images.ImageColumns.BUCKET_DISPLAY_NAME, file.getName().toLowerCase(Locale.US));
+//        values.put("_data", file.getAbsolutePath());
+//
+//        cr = Objects.requireNonNull(getActivity()).getContentResolver();
+//        cr.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+//        MediaStore.Images.Media.insertImage(getActivity().getContentResolver(), file.getAbsolutePath() , file.getName() ,"Encrypted Image form Image Securer App");
+
         Toast.makeText(getActivity(),"Image Saved!",Toast.LENGTH_SHORT).show();
     }
 
