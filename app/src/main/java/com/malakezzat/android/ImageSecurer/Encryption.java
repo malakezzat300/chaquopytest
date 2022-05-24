@@ -62,6 +62,8 @@ public class Encryption extends Fragment implements Runnable{
     Thread imageThread,imageThread2;
     int j = 1;
     ArrayList<Thread> threads;
+    MediaScannerConnection msc;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -86,7 +88,7 @@ public class Encryption extends Fragment implements Runnable{
             }
         });
 
-
+/*
         Runnable loading = new Runnable() {
             @Override
             public void run() {
@@ -120,6 +122,7 @@ public class Encryption extends Fragment implements Runnable{
             }
 
         };
+        */
 
         buttonEncrypt.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -230,21 +233,18 @@ public class Encryption extends Fragment implements Runnable{
 
         FileOutputStream outputStream = null;
         File file = Environment.getExternalStorageDirectory();
-        File dir = new File(file.getAbsolutePath() + "/DCIM/MyPics5/");
+        File dir = new File(file.getAbsolutePath() + "/DCIM/MyPics/");
         dir.mkdirs();
 
         String filename = String.format("%d.png",System.currentTimeMillis());
         File outFile = new File(dir,filename);
-        MediaScannerConnection.scanFile(getActivity(),
-                new String[] { outFile.getAbsolutePath()  }, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    public void onScanCompleted(String path, Uri uri) {
-                    }});
+
         try{
             outputStream = new FileOutputStream(outFile);
         }catch (Exception e){
             e.printStackTrace();
         }
+
         bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
         try{
             outputStream.flush();
@@ -257,6 +257,12 @@ public class Encryption extends Fragment implements Runnable{
         catch (Exception e){
             e.printStackTrace();
         }
+        MediaScannerConnection.scanFile(getActivity(),
+                new String[] { outFile.getAbsolutePath()  }, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+
+                    }});
         Toast.makeText(getActivity(),"Image Saved!",Toast.LENGTH_SHORT).show();
     }
 

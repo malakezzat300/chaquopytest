@@ -189,16 +189,13 @@ public class Decryption extends Fragment {
 
         String filename = String.format("%d.png",System.currentTimeMillis());
         File outFile = new File(dir,filename);
-        MediaScannerConnection.scanFile(getActivity(),
-                new String[] { outFile.getAbsolutePath()  }, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    public void onScanCompleted(String path, Uri uri) {
-                    }});
+
         try{
             outputStream = new FileOutputStream(outFile);
         }catch (Exception e){
             e.printStackTrace();
         }
+
         bitmap.compress(Bitmap.CompressFormat.PNG,100,outputStream);
         try{
             outputStream.flush();
@@ -211,6 +208,11 @@ public class Decryption extends Fragment {
         catch (Exception e){
             e.printStackTrace();
         }
+        MediaScannerConnection.scanFile(getActivity(),
+                new String[] { outFile.getAbsolutePath()  }, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                    }});
         Toast.makeText(getActivity(),"Image Saved!",Toast.LENGTH_SHORT).show();
     }
 

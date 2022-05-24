@@ -38,7 +38,7 @@ public class SendImage extends Fragment {
     private static final int PICK_IMAGE = 100;
     private Button mButtonUpload,mButtonGetImage,mGenerateKey;
     private ImageButton mCopy;
-    private StorageReference mStorageRef;
+    private StorageReference mStorageRef; //to use firebase database
     private Uri mImageUri;
     private ProgressBar mProgressBar;
     private ImageView img;
@@ -54,7 +54,6 @@ public class SendImage extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_send_image, container, false);
 
-        //TODO onCreate
         img=(ImageView) view.findViewById(R.id.imageView3);
         mButtonUpload=view.findViewById(R.id.upload);
         mButtonGetImage=view.findViewById(R.id.openGallery);
